@@ -20,7 +20,7 @@ impl Add for FieldElement {
 
 impl Sub for FieldElement {
     type Output = FieldElement;
-    fn sub(self, other: FieldElement) -> FieldElement {
+    fn sub(self, other: FieldElement) -> Self {
         if self.prime != other.prime {
             panic!("Elements belong to different fields");
         }
