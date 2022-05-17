@@ -12,10 +12,7 @@ impl Add for FieldElement {
         if self.prime != other.prime {
             panic!("Elements belong to different fields");
         }
-        FieldElement {
-            elem: (self.elem + other.elem) % self.prime,
-            prime: self.prime,
-        }
+        FieldElement::new(self.elem + other.elem, self.prime)
     }
 }
 
@@ -25,10 +22,7 @@ impl Sub for FieldElement {
         if self.prime != other.prime {
             panic!("Elements belong to different fields");
         }
-        FieldElement {
-            elem: (self.prime + self.elem - other.elem) % self.prime,
-            prime: self.prime,
-        }
+        FieldElement::new(self.elem - other.elem, self.prime)
     }
 }
 
@@ -38,10 +32,7 @@ impl Mul for FieldElement {
         if self.prime != other.prime {
             panic!("Elements belong to different fields");
         }
-        FieldElement {
-            elem: (self.elem * other.elem) % self.prime,
-            prime: self.prime,
-        }
+        FieldElement::new(self.elem * other.elem, self.prime)
     }
 }
 impl Div for FieldElement {
@@ -54,6 +45,7 @@ impl Div for FieldElement {
 
 impl FieldElement {
     pub fn new(elem: i64, prime: i64) -> FieldElement {
+        let elem = elem.rem_euclid(prime);
         FieldElement { elem, prime }
     }
 
