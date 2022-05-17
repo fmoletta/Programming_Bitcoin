@@ -9,9 +9,10 @@ pub struct FieldElement {
 impl Add for FieldElement {
     type Output = FieldElement;
     fn add(self, other: FieldElement) -> FieldElement {
-        if self.prime != other.prime {
-            panic!("Elements belong to different fields");
-        }
+        assert!(
+            self.prime == other.prime,
+            "Elements belong to different fields"
+        );
         FieldElement::new(self.elem + other.elem, self.prime)
     }
 }
@@ -19,9 +20,10 @@ impl Add for FieldElement {
 impl Sub for FieldElement {
     type Output = FieldElement;
     fn sub(self, other: FieldElement) -> Self {
-        if self.prime != other.prime {
-            panic!("Elements belong to different fields");
-        }
+        assert!(
+            self.prime == other.prime,
+            "Elements belong to different fields"
+        );
         FieldElement::new(self.elem - other.elem, self.prime)
     }
 }
@@ -29,9 +31,10 @@ impl Sub for FieldElement {
 impl Mul for FieldElement {
     type Output = FieldElement;
     fn mul(self, other: FieldElement) -> FieldElement {
-        if self.prime != other.prime {
-            panic!("Elements belong to different fields");
-        }
+        assert!(
+            self.prime == other.prime,
+            "Elements belong to different fields"
+        );
         FieldElement::new(self.elem * other.elem, self.prime)
     }
 }
@@ -50,9 +53,13 @@ impl FieldElement {
     }
 
     pub fn pow(self, num: i64) -> FieldElement {
-        let exp = if num < 0 { num.rem_euclid(self.prime - 1) } else { num };
+        let exp = if num < 0 {
+            num.rem_euclid(self.prime - 1)
+        } else {
+            num
+        };
         FieldElement {
-            elem: i64::pow(self.elem, exp as u32) % self.prime,
+            elem: i64::pow(self.elem, exp as u32).rem_euclid(self.prime),
             prime: self.prime,
         }
     }
@@ -116,4 +123,11 @@ mod tests {
         assert_eq!(expected, a / b);
     }
 
+    #[test]
+    #[should_panic]
+    fn div_test_different_finite_field() {
+        let a = FieldElement::new(7, 19);
+        let b = FieldElement::new(5, 5);
+        let _ = a / b;
+    }
 }
